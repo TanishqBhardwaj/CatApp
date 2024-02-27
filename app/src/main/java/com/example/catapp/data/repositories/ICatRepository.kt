@@ -7,7 +7,7 @@ interface ICatRepository {
 
     suspend fun fetchCatData(
         pageNo: Int,
-        order: String,
-        pageLimit: Int
+        pageLimit: Int,
+        order: String
     ): NetworkResult<List<ApiResponse>>
 }

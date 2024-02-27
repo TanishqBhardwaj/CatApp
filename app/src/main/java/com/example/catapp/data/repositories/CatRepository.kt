@@ -11,12 +11,15 @@ class CatRepository @Inject constructor(private val apiService: ApiService) : IC
 
     override suspend fun fetchCatData(
         pageNo: Int,
-        order: String,
-        pageLimit: Int
+        pageLimit: Int,
+        order: String
     ): NetworkResult<List<ApiResponse>> {
         return handleApi {
             apiService.fetchData(
-                apiKey = Constants.CAT_API_KEY
+                apiKey = Constants.CAT_API_KEY,
+                page = pageNo,
+                limit = pageLimit,
+                order = order
             )
         }
     }
