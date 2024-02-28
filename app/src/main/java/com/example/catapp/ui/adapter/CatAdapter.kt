@@ -12,7 +12,8 @@ import com.example.catapp.R
 import com.example.catapp.data.models.CatItem
 
 class CatAdapter(
-    private val catList: List<CatItem>
+    private val catList: List<CatItem>,
+    private val listener: OnItemClickListener
 ): RecyclerView.Adapter<CatAdapter.CatViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatViewHolder {
@@ -30,15 +31,30 @@ class CatAdapter(
         return catList.size
     }
 
-    inner class CatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    interface OnItemClickListener {
+        fun onItemClick(catItem: CatItem)
+    }
+
+    inner class CatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val catImageView: ImageView = itemView.findViewById(R.id.catImageView)
         private val catTextView: TextView = itemView.findViewById(R.id.catTextView)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
 
         fun bind(catItem: CatItem) {
             catImageView.load(catItem.imageUrl) {
                 scale(Scale.FIT)
             }
             catTextView.text = catItem.name
+        }
+
+        override fun onClick(p0: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(catList[position])
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.catapp.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CatAdapter.OnItemClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var catAdapter: CatAdapter
@@ -29,6 +31,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         loadingState()
         getCatData()
+    }
+
+    override fun onItemClick(catItem: CatItem) {
+        Intent(this, CatDetailActivity()::class.java).also {
+            it.putExtra("CAT_ITEM", catItem)
+            startActivity(it)
+        }
     }
 
     private fun getCatData() {
@@ -55,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun populateData(catItemList: List<CatItem>) {
-        catAdapter = CatAdapter(catItemList)
+        catAdapter = CatAdapter(catItemList, this)
         binding.recyclerView.layoutManager = GridLayoutManager(this, 2)
         binding.recyclerView.adapter = catAdapter
     }

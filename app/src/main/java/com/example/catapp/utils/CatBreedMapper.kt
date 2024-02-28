@@ -12,6 +12,14 @@ object CatBreedMapper {
     }
 
     private fun mapApiResponseToUiCatData(apiResponse: ApiResponse): CatItem {
-        return CatItem(apiResponse.name, apiResponse.image?.url)
+        return CatItem(
+            apiResponse.id,
+            apiResponse.name,
+            apiResponse.image?.url,
+            apiResponse.origin,
+            apiResponse.temperament,
+            apiResponse.lifeSpan,
+            apiResponse.description
+        )
     }
 }
