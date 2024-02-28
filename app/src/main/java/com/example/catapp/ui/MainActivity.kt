@@ -1,27 +1,72 @@
 package com.example.catapp.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.catapp.data.models.CatItem
+import com.example.catapp.data.models.CatUiState
 import com.example.catapp.databinding.ActivityMainBinding
+import com.example.catapp.ui.adapter.CatAdapter
 import com.example.catapp.viewmodels.CatViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var catAdapter: CatAdapter
     private val catViewModel by viewModels<CatViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        catViewModel.getProductViewModel()
-        catViewModel.productList.observe(this, Observer {
-            println(it)
-            println(it.toString())
-        })
+        loadingState()
+        getCatData()
+    }
+
+    private fun getCatData() {
+        catViewModel.getCatData()
+        lifecycleScope.launch(Dispatchers.Main) {
+            catViewModel.catListState.collect { state ->
+                when (state) {
+                    is CatUiState.Loading -> {
+                        loadingState()
+                    }
+
+                    is CatUiState.Success -> {
+                        loadedState()
+                        populateData(state.data)
+                    }
+
+                    is CatUiState.Error -> {
+                        Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG)
+                            .setAction("Retry") {}.show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun populateData(catItemList: List<CatItem>) {
+        catAdapter = CatAdapter(catItemList)
+        binding.recyclerView.layoutManager = GridLayoutManager(this, 2)
+        binding.recyclerView.adapter = catAdapter
+    }
+
+    private fun loadingState() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.recyclerView.visibility = View.GONE
+    }
+
+    private fun loadedState() {
+        binding.progressBar.visibility = View.GONE
+        binding.recyclerView.visibility = View.VISIBLE
     }
 }

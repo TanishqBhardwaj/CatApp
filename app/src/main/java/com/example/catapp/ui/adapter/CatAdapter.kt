@@ -3,8 +3,11 @@ package com.example.catapp.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.size.Scale
 import com.example.catapp.R
 import com.example.catapp.data.models.CatItem
 
@@ -28,10 +31,14 @@ class CatAdapter(
     }
 
     inner class CatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val textViewDay: TextView = itemView.findViewById(R.id.textView)
+        private val catImageView: ImageView = itemView.findViewById(R.id.catImageView)
+        private val catTextView: TextView = itemView.findViewById(R.id.catTextView)
 
         fun bind(catItem: CatItem) {
-            textViewDay.text = catItem.name
+            catImageView.load(catItem.imageUrl) {
+                scale(Scale.FIT)
+            }
+            catTextView.text = catItem.name
         }
     }
 }

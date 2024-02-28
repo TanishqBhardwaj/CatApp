@@ -1,11 +1,9 @@
 package com.example.catapp.viewmodels
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapp.data.datasources.remote.NetworkResult
-import com.example.catapp.data.models.ApiResponse
-import com.example.catapp.data.models.CatViewModelState
+import com.example.catapp.data.models.CatUiState
 import com.example.catapp.data.repositories.ICatRepository
 import com.example.catapp.utils.CatBreedMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,50 +17,36 @@ import javax.inject.Inject
 @HiltViewModel
 class CatViewModel @Inject constructor(private val catRepository: ICatRepository) : ViewModel() {
 
-    val productList : MutableLiveData<NetworkResult<List<ApiResponse>>> = MutableLiveData()
-
-    private val _catListState = MutableStateFlow(CatViewModelState())
+    private val _catListState: MutableStateFlow<CatUiState> = MutableStateFlow(CatUiState.Loading)
     val catListState get() = _catListState.asStateFlow()
 
-    init {
+    fun getCatData() {
         _catListState.update {
-            _catListState.value.copy(isLoading = true, isError = false)
+            CatUiState.Loading
         }
-    }
-
-    fun getProductViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val fetchedCatData = catRepository.fetchCatData(1, 10, "ASC")
-            setLoadingFalse()
             when (fetchedCatData) {
                 is NetworkResult.Success -> {
                     _catListState.update {
-                        _catListState.value.copy(
-                            data = CatBreedMapper.mapToUiCatItems(
-                                fetchedCatData.data
-                            )
-                        )
+                        CatUiState.Success(CatBreedMapper.mapToUiCatItems(
+                            fetchedCatData.data
+                        ))
                     }
                 }
 
                 is NetworkResult.Error -> {
                     _catListState.update {
-                        _catListState.value.copy(isError = true, errorMessage = it.errorMessage)
+                        CatUiState.Error("Error")
                     }
                 }
 
                 is NetworkResult.Exception -> {
                     _catListState.update {
-                        _catListState.value.copy(isError = true, errorMessage = it.errorMessage)
+                        CatUiState.Error("Error")
                     }
                 }
             }
-        }
-    }
-
-    private fun setLoadingFalse() {
-        _catListState.update {
-            _catListState.value.copy(isLoading = false)
         }
     }
 }
