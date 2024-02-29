@@ -8,4 +8,8 @@ object Constants {
     const val CONNECT_TIMEOUT_IN_SECONDS = 60L
     const val READ_TIMEOUT_IN_SECONDS = 60L
     const val WRITE_TIMEOUT_IN_SECONDS = 60L
+
+    const val PAGE_SIZE = 20
+    const val ASC = "ASC"
+    const val CAT_ITEM = "CAT_ITEM"
 }

@@ -7,6 +7,7 @@ import coil.load
 import coil.size.Scale
 import com.example.catapp.data.models.CatItem
 import com.example.catapp.databinding.ActivityCatDetailBinding
+import com.example.catapp.utils.Constants
 
 class CatDetailActivity : AppCompatActivity() {
 
@@ -30,7 +31,7 @@ class CatDetailActivity : AppCompatActivity() {
     private fun setUpView() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val catItem = intent.getSerializableExtra("CAT_ITEM") as CatItem
+        val catItem = intent.getSerializableExtra(Constants.CAT_ITEM) as CatItem
         supportActionBar?.title = catItem.name
         binding.catDetailImageView.load(catItem.imageUrl) {
             scale(Scale.FIT)

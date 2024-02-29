@@ -12,7 +12,7 @@ import com.example.catapp.R
 import com.example.catapp.data.models.CatItem
 
 class CatAdapter(
-    private val catList: List<CatItem>,
+    private var catList: List<CatItem>,
     private val listener: OnItemClickListener
 ): RecyclerView.Adapter<CatAdapter.CatViewHolder>() {
 
@@ -29,6 +29,11 @@ class CatAdapter(
 
     override fun getItemCount(): Int {
         return catList.size
+    }
+
+    fun updateList(newList: List<CatItem>) {
+        catList = newList
+        notifyDataSetChanged() // Notify adapter about the change
     }
 
     interface OnItemClickListener {
